@@ -23,24 +23,20 @@ def _handleRevisionUpload(event):
         item = itemModel.load(file['itemId'], force=True)
 
         maxRev = itemModel.find({
-            'meta.versionInfo.path': path,
+            'meta.versionedFilePath': path,
         }, fields={
-            'meta.versionInfo.revision': True
-        }, sort={
-            'meta.versionInfo.revision': constants.SortDir.DESCENDING
-        }, limit=1)
+            'meta.versionedFileRevision': True
+        }, sort=[('meta.versionedFileRevision', constants.SortDir.DESCENDING)], limit=1)
 
         if maxRev.count() == 0:
             revision = 1
         else:
-            revision = maxRev.next()['meta']['versionInfo']['revision'] + 1
+            revision = maxRev.next()['meta']['versionedFileRevision'] + 1
 
         itemModel.update({'_id': item['_id']}, update={
             '$set': {
-                'meta.versionInfo': {
-                    'path': path,
-                    'revision': revision
-                }
+                'meta.versionedFilePath': path,
+                'meta.versionedFileRevision': revision
             }
         }, multi=False)
 
@@ -49,6 +45,6 @@ def load(info):
     events.bind('model.file.finalizeUpload.after', info['name'], _handleRevisionUpload)
 
     ModelImporter.model('item').ensureIndex(([
-         ('meta.versionInfo.path', constants.SortDir.ASCENDING),
-         ('meta.versionInfo.revision', constants.SortDir.DESCENDING)
+         ('meta.versionedFilePath', constants.SortDir.ASCENDING),
+         ('meta.versionedFileRevision', constants.SortDir.DESCENDING)
     ], {}))
