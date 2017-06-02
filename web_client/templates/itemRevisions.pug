@@ -1,0 +1,16 @@
+h4 #[i.icon-clock] Revisions for #[b= path]
+.panel-group.g-revisions-list-container
+  each item in items
+    .panel.panel-default
+      .panel-heading(data-toggle="collapse",
+          data-parent=".g-revisions-list-container",
+          data-target=`.g-revision-panel[item-id="${item.id}"]`)
+        .panel-title
+          a Revision #{item.get('meta').versionedFileRevision}
+      .panel-collapse.collapse.g-revision-panel(item-id=item.id)
+        .panel-body
+          .g-info-field Name: #[a(href=`#item/${item.id}`)= item.name()]
+          .g-info-field Uploaded: #[b= formatDate(item.get('created'), DATE_SECOND)]
+          .g-info-field Size: #[b= formatSize(item.get('size'))]
+
+.g-paginate-container

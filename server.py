@@ -2,7 +2,7 @@ import json
 from girder import constants, events
 from girder.api import access
 from girder.api.describe import Description, autoDescribeRoute
-from girder.api.rest import boundHandler, RestException
+from girder.api.rest import boundHandler, filtermodel
 from girder.utility.model_importer import ModelImporter
 
 
@@ -46,6 +46,7 @@ def _handleRevisionUpload(event):
 
 @access.public(scope=constants.TokenScope.DATA_READ)
 @boundHandler()
+@filtermodel('item')
 @autoDescribeRoute(
     Description('Retrieve a list of ')
     .param('path', 'Canonical path of the versioned file.')
@@ -69,4 +70,4 @@ def load(info):
          ('meta.versionedFileRevision', constants.SortDir.DESCENDING)
     ], {}))
 
-    info['apiRoot'].item.route('GET', ('revisions',), _getRevisionsByPath)
+    info['apiRoot'].item.route('GET', ('data_revisions',), _getRevisionsByPath)
